@@ -1,11 +1,50 @@
 # NetGuard — IoT Security Appliance
 
-An AI-powered, production-ready home network security appliance that continuously monitors, profiles, and analyzes every device on your network using real nmap scanning + Groq LLaMA 3 70B intelligence.
+> AI-powered home network security that continuously monitors, profiles, and analyzes every device on your network using real nmap scanning and Groq LLaMA 3 70B.
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688)
+![Groq](https://img.shields.io/badge/AI-Groq%20LLaMA%203%2070B-orange)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [API Reference](#api-reference)
+- [Risk Scoring](#risk-scoring)
+- [Project Structure](#project-structure)
+- [Security Notes](#security-notes)
+
+---
+
+## Overview
+
+NetGuard is a self-hosted network security appliance for home and small office environments. It automatically discovers every device on your network, fingerprints them, and runs continuous AI-driven risk assessments — surfacing vulnerabilities before they become incidents.
+
+---
+
+## Features
+
+| Feature | Description |
+|---|---|
+| 🔍 **Real-time Discovery** | Finds every device via ARP + port scanning |
+| 🧠 **AI Risk Analysis** | Groq LLaMA 3 70B analyzes each device for security risks |
+| 📊 **Risk Scoring** | 0–100 blended score (60% AI / 40% rule-based) |
+| 🖥️ **Live Dashboard** | WebSocket-powered UI with network topology map |
+| 🚨 **Alert System** | Automatic alerts for critical findings |
+| 📜 **Device History** | Track risk score changes over time |
+| 🔎 **Deep Profiling** | OS detection, open ports, services, firmware versions |
+| 🔒 **Vulnerability Detection** | Flags outdated software, dangerous ports, and weak configs |
 
 ---
 
 ## Architecture
-
 ```
 ┌─────────────────────────────────────────────────────┐
 │                   Browser / Dashboard                │
@@ -27,115 +66,109 @@ An AI-powered, production-ready home network security appliance that continuousl
               └────────────────┘
 ```
 
-## Features
-
-- **Real-time discovery**: Finds every device on your network using ARP + port scanning
-- **Deep profiling**: Detects OS, open ports, running services, firmware versions
-- **AI risk analysis**: Groq LLaMA 3 70B analyzes each device for security risks
-- **Vulnerability detection**: Identifies outdated software, dangerous ports, weak configs
-- **Risk scoring**: 0-100 risk score blending rule-based + AI analysis (60/40)
-- **Live dashboard**: WebSocket-powered real-time updates, network topology map
-- **Alert system**: Automatic alerts for critical findings
-- **Device history**: Track risk changes over time
-- **Deep AI analysis**: On-demand comprehensive security audit per device
-
 ---
 
 ## Quick Start
 
-### 1. Prerequisites
-
+### Prerequisites
 ```bash
-# Ubuntu/Debian
+# Ubuntu / Debian
 sudo apt install nmap python3 python3-pip python3-venv
 
 # macOS
 brew install nmap python3
 ```
 
-### 2. Clone and Configure
-
+### Installation
 ```bash
-git clone <repo>
+git clone <repo-url>
 cd iot-security-appliance
 cp .env.example .env
 ```
 
-Edit `.env`:
-```env
-GROQ_API_KEY=gsk_your_key_here     # Required — get free at console.groq.com
-NETWORK_RANGE=auto                  # Or: 192.168.1.0/24
-SCAN_INTERVAL_SECONDS=120           # Background scan frequency
-```
-
-### 3. Run
-
+### Run
 ```bash
 # Standard mode
 bash start.sh
 
-# Full capabilities (OS detection, SYN scan)
+# Full capabilities — enables OS detection and SYN scanning (recommended)
 sudo bash start.sh
 ```
 
-Open **http://localhost:8000** in your browser.
+Open http://localhost:8000 in your browser.
 
 ---
 
-## API Endpoints
+## Configuration
+
+Edit `.env` after copying from `.env.example`:
+```env
+GROQ_API_KEY=gsk_your_key_here      # Required — get a free key at console.groq.com
+NETWORK_RANGE=auto                   # Or specify manually: 192.168.1.0/24
+SCAN_INTERVAL_SECONDS=120            # Background scan frequency in seconds
+```
+
+> **Note:** Groq's free tier allows ~30 requests/minute and 14,400/day — sufficient for most home networks. The agent batches devices (10 per request) with built-in rate limiting. If the Groq API is unavailable, the system falls back to rule-based analysis automatically.
+
+---
+
+## API Reference
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/devices` | List all devices |
-| GET | `/api/devices/{ip}` | Device detail + history |
-| POST | `/api/scan` | Trigger manual scan |
-| GET | `/api/alerts` | Get alerts |
-| POST | `/api/alerts/ack` | Acknowledge alert |
-| POST | `/api/devices/action` | isolate / analyze / ignore |
-| GET | `/api/stats` | Dashboard statistics |
-| WS | `/ws` | Real-time event stream |
+|---|---|---|
+| `GET` | `/api/devices` | List all discovered devices |
+| `GET` | `/api/devices/{ip}` | Device detail and scan history |
+| `POST` | `/api/scan` | Trigger a manual network scan |
+| `GET` | `/api/alerts` | Retrieve active alerts |
+| `POST` | `/api/alerts/ack` | Acknowledge an alert |
+| `POST` | `/api/devices/action` | Run action: `isolate`, `analyze`, or `ignore` |
+| `GET` | `/api/stats` | Dashboard summary statistics |
+| `WS` | `/ws` | Real-time event stream |
 
-Full API docs: http://localhost:8000/docs
+Full interactive docs: http://localhost:8000/docs
 
 ---
 
 ## Risk Scoring
 
-Risk scores (0–100) are computed as:
+Each device receives a score from **0–100**, calculated as:
+
 - **60%** — AI analysis (Groq LLaMA 3 70B)
-- **40%** — Rule-based analysis
+- **40%** — Rule-based heuristics
 
-| Level | Score | Meaning |
-|-------|-------|---------|
-| Critical | 70–100 | Immediate action required |
-| High | 50–69 | Serious risks present |
-| Medium | 25–49 | Moderate risks |
-| Low | 0–24 | Minimal risk |
+### Score Levels
 
-**Factors considered:**
+| Level | Range | Action |
+|---|---|---|
+| 🔴 Critical | 70–100 | Immediate action required |
+| 🟠 High | 50–69 | Serious risks present |
+| 🟡 Medium | 25–49 | Moderate risks |
+| 🟢 Low | 0–24 | Minimal risk |
+
+### Factors Evaluated
+
 - Open dangerous ports (Telnet, RDP, VNC, FTP)
-- Outdated firmware/OS
+- Outdated firmware or OS versions
 - Unencrypted protocols (HTTP, MQTT, Telnet)
 - Default credential risk by device type
 - Known CVE indicators in service banners
-- Attack surface (number of open ports)
-- Device type baseline risk
+- Attack surface (total number of open ports)
+- Device type baseline risk profile
 
 ---
 
 ## Project Structure
-
 ```
 iot-security-appliance/
 ├── backend/
-│   ├── main.py          # FastAPI app, WebSocket, scan loop
-│   ├── scanner.py       # nmap network discovery
+│   ├── main.py          # FastAPI app, WebSocket handler, scan loop
+│   ├── scanner.py       # nmap-based network discovery
 │   ├── profiler.py      # Deep device profiling
-│   ├── ai_agent.py      # Groq LLaMA 3 AI analysis
-│   ├── risk_engine.py   # Risk scoring & alert generation
-│   └── database.py      # Async SQLite persistence
+│   ├── ai_agent.py      # Groq LLaMA 3 AI analysis agent
+│   ├── risk_engine.py   # Risk scoring and alert generation
+│   └── database.py      # Async SQLite persistence layer
 ├── frontend/
-│   └── index.html       # Full dashboard (single-file)
+│   └── index.html       # Single-file dashboard
 ├── requirements.txt
 ├── .env.example
 ├── start.sh
@@ -144,17 +177,11 @@ iot-security-appliance/
 
 ---
 
-## Groq Free Tier Limits
-
-Groq's free tier allows ~30 requests/minute and 14,400/day — more than sufficient for home network scanning. The agent automatically batches devices (10 per request) and includes built-in rate limiting.
-
-If Groq API is unavailable, the system **falls back to rule-based analysis** automatically — the dashboard remains fully functional.
-
----
-
 ## Security Notes
 
-- **Run as root** for full nmap SYN scan + OS detection capabilities
-- The database (`iot_security.db`) stores your network topology — protect it
-- The dashboard has no authentication by default — bind to `127.0.0.1` in `.env` if on a shared machine
-- For remote access, put behind a reverse proxy with authentication (nginx + basic auth)
+> ⚠️ **Read before deploying.**
+
+- **Root access** is required for full nmap SYN scanning and OS detection.
+- `iot_security.db` contains your full network topology — store it securely.
+- The dashboard has **no authentication by default** — bind to `127.0.0.1` in `.env` on shared machines.
+- For remote access, put NetGuard behind a reverse proxy with auth (e.g., nginx + basic auth or Authelia).
