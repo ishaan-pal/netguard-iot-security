@@ -1,0 +1,23 @@
+# Core API framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# Async HTTP client (for Groq API)
+httpx>=0.27.0
+
+# Async SQLite database
+aiosqlite>=0.20.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Data validation — use latest to get pre-built wheels for Python 3.13/3.14
+pydantic>=2.10.0
+
+# Network scanning (install nmap binary separately)
+# Windows: https://nmap.org/download.html
+# macOS:   brew install nmap
+python-nmap>=0.7.1
+
+# Static file serving
+aiofiles>=24.1.0

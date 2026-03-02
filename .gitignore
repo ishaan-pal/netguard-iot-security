@@ -1,0 +1,21 @@
+﻿# Environment — contains your API keys, NEVER commit this
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Database — contains your network scan data
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

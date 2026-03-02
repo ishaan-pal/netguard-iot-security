@@ -1,0 +1,188 @@
+{
+  "_comment": "Device type intelligence config. Edit freely — no code changes needed.",
+
+  "device_types": {
+    "router": {
+      "base_risk": 18,
+      "display_name": "Router / Gateway",
+      "icon": "🛜",
+      "description": "Network gateway — controls all traffic, high-value target",
+      "default_credentials": "admin/admin, admin/password, admin/(blank), root/root",
+      "typical_ports": [22, 23, 53, 80, 443, 8080],
+      "high_value_target": true,
+      "notes": "Compromise gives attacker full network control"
+    },
+    "ip_camera": {
+      "base_risk": 25,
+      "display_name": "IP Camera",
+      "icon": "📷",
+      "description": "Network camera — frequent default credentials, privacy risk",
+      "default_credentials": "admin/admin, admin/12345, root/12345, admin/(blank)",
+      "typical_ports": [80, 443, 554, 8080, 8554],
+      "high_value_target": false,
+      "notes": "Privacy risk; often added to botnets (Mirai). Default creds extremely common"
+    },
+    "iot_hub": {
+      "base_risk": 18,
+      "display_name": "IoT Hub / Controller",
+      "icon": "🔌",
+      "description": "Smart home controller — manages multiple devices",
+      "default_credentials": "admin/admin, root/root, admin/1234",
+      "typical_ports": [80, 443, 1883, 8883, 8080],
+      "high_value_target": true,
+      "notes": "Compromise allows control of all connected smart devices"
+    },
+    "smart_bulb": {
+      "base_risk": 8,
+      "display_name": "Smart Bulb",
+      "icon": "💡",
+      "description": "Connected lighting device",
+      "default_credentials": "Managed via hub — check hub security",
+      "typical_ports": [],
+      "high_value_target": false,
+      "notes": "Low direct risk but can be pivot point if on same VLAN"
+    },
+    "smart_speaker": {
+      "base_risk": 12,
+      "display_name": "Smart Speaker",
+      "icon": "🔊",
+      "description": "Voice assistant / smart speaker — always-on microphone",
+      "default_credentials": "Managed via cloud account",
+      "typical_ports": [4070, 55443],
+      "high_value_target": false,
+      "notes": "Privacy concern due to always-on microphone. Ensure cloud account is secure"
+    },
+    "printer": {
+      "base_risk": 12,
+      "display_name": "Printer",
+      "icon": "🖨️",
+      "description": "Network printer — often stores print jobs, weak auth common",
+      "default_credentials": "admin/(blank), admin/admin, 1234/1234",
+      "typical_ports": [80, 443, 631, 9100],
+      "high_value_target": false,
+      "notes": "Can store sensitive documents. Firmware often outdated"
+    },
+    "windows_pc": {
+      "base_risk": 8,
+      "display_name": "Windows PC",
+      "icon": "🖥️",
+      "description": "Windows workstation or server",
+      "default_credentials": "Varies by setup",
+      "typical_ports": [135, 139, 445, 3389],
+      "high_value_target": true,
+      "notes": "High value for ransomware. Keep fully patched"
+    },
+    "linux_device": {
+      "base_risk": 5,
+      "display_name": "Linux Device",
+      "icon": "🐧",
+      "description": "Linux server or workstation",
+      "default_credentials": "pi/raspberry (Raspberry Pi), root/root, ubuntu/ubuntu",
+      "typical_ports": [22, 80, 443],
+      "high_value_target": false,
+      "notes": "Generally lower risk if kept patched and SSH hardened"
+    },
+    "apple_device": {
+      "base_risk": 4,
+      "display_name": "Apple Device",
+      "icon": "🍎",
+      "description": "iPhone, iPad, Mac, or Apple TV",
+      "default_credentials": "N/A — Apple ID based",
+      "typical_ports": [62078, 7000],
+      "high_value_target": false,
+      "notes": "Generally good security posture. Keep iOS/macOS updated"
+    },
+    "android_device": {
+      "base_risk": 7,
+      "display_name": "Android Device",
+      "icon": "📱",
+      "description": "Android phone or tablet",
+      "default_credentials": "N/A — Google account based",
+      "typical_ports": [5555],
+      "high_value_target": false,
+      "notes": "ADB (port 5555) being open is a critical risk on Android"
+    },
+    "smart_tv": {
+      "base_risk": 10,
+      "display_name": "Smart TV",
+      "icon": "📺",
+      "description": "Smart television — often has outdated firmware",
+      "default_credentials": "Varies by manufacturer",
+      "typical_ports": [80, 443, 8080, 9080],
+      "high_value_target": false,
+      "notes": "TVs rarely receive security updates. Keep on separate IoT VLAN"
+    },
+    "chromecast": {
+      "base_risk": 5,
+      "display_name": "Chromecast / Google TV",
+      "icon": "📡",
+      "description": "Google streaming device",
+      "default_credentials": "Managed via Google account",
+      "typical_ports": [8008, 8009, 8443],
+      "high_value_target": false,
+      "notes": "Relatively low risk. Ensure Google account has 2FA"
+    },
+    "single_board_computer": {
+      "base_risk": 14,
+      "display_name": "Single Board Computer",
+      "icon": "🔧",
+      "description": "Raspberry Pi or similar — often has default credentials",
+      "default_credentials": "pi/raspberry, root/root, ubuntu/ubuntu",
+      "typical_ports": [22, 80, 443, 5900],
+      "high_value_target": false,
+      "notes": "Frequently deployed with default credentials unchanged"
+    },
+    "nas": {
+      "base_risk": 20,
+      "display_name": "NAS / Storage",
+      "icon": "💾",
+      "description": "Network attached storage — stores sensitive files",
+      "default_credentials": "admin/admin, admin/(blank)",
+      "typical_ports": [22, 80, 139, 443, 445, 548, 5000, 8080],
+      "high_value_target": true,
+      "notes": "High value ransomware target. Keep patched and restrict SMB access"
+    },
+    "networked_device": {
+      "base_risk": 10,
+      "display_name": "Networked Device",
+      "icon": "🌐",
+      "description": "Unclassified networked device",
+      "default_credentials": "Unknown — investigate",
+      "typical_ports": [],
+      "high_value_target": false,
+      "notes": "Unidentified device — investigate and inventory"
+    },
+    "unknown": {
+      "base_risk": 18,
+      "display_name": "Unknown Device",
+      "icon": "❓",
+      "description": "Unidentified device — potential rogue or unmanaged device",
+      "default_credentials": "Unknown",
+      "typical_ports": [],
+      "high_value_target": false,
+      "notes": "Unknown devices are a major risk — identify and inventory immediately"
+    }
+  },
+
+  "risk_levels": {
+    "critical": { "min_score": 70, "color": "#ff2d55", "action": "Immediate action required" },
+    "high":     { "min_score": 50, "color": "#ff8c00", "action": "Address within 24 hours" },
+    "medium":   { "min_score": 25, "color": "#ffcc00", "action": "Address within 1 week" },
+    "low":      { "min_score": 0,  "color": "#00ff88", "action": "Monitor and review periodically" }
+  },
+
+  "attack_surface_risk": {
+    "port_count_thresholds": [
+      { "min_ports": 15, "extra_score": 20 },
+      { "min_ports": 10, "extra_score": 14 },
+      { "min_ports": 6,  "extra_score": 8  },
+      { "min_ports": 3,  "extra_score": 3  }
+    ]
+  },
+
+  "unknown_device_penalties": {
+    "no_vendor":   5,
+    "no_hostname": 3,
+    "no_os":       4
+  }
+}
